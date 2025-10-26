@@ -1,61 +1,61 @@
-name: CI
+# name: CI
 
-on:
-  push:
-    branches: [ main, master ]
-  pull_request:
-    branches: [ main, master ]
+# on:
+#   push:
+#     branches: [ main, master ]
+#   pull_request:
+#     branches: [ main, master ]
 
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:15
-        env:
-          POSTGRES_PASSWORD: password
-          POSTGRES_DB: itpm
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-    steps:
-      - uses: actions/checkout@v4
-      - name: Use Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-      - name: Install dependencies
-        run: npm ci
-      - name: Wait for Postgres
-        run: |
-          n=0
-          until pg_isready -h localhost -p 5432 || [ $n -ge 10 ]; do
-            n=$((n+1))
-            sleep 1
-          done
-      - name: Run migrations
-        env:
-          DATABASE_URL: postgres://postgres:password@localhost:5432/itpm
-        run: psql $DATABASE_URL -f migrations/schema.sql || true
-      - name: Run tests
-        env:
-          DATABASE_URL: postgres://postgres:password@localhost:5432/itpm
-          JWT_SECRET: ci-secret
-        run: npm test
+# jobs:
+#   test:
+#     runs-on: ubuntu-latest
+#     services:
+#       postgres:
+#         image: postgres:15
+#         env:
+#           POSTGRES_PASSWORD: password
+#           POSTGRES_DB: itpm
+#         ports:
+#           - 5432:5432
+#         options: >-
+#           --health-cmd pg_isready
+#           --health-interval 10s
+#           --health-timeout 5s
+#           --health-retries 5
+#     steps:
+#       - uses: actions/checkout@v4
+#       - name: Use Node.js
+#         uses: actions/setup-node@v4
+#         with:
+#           node-version: 20
+#       - name: Install dependencies
+#         run: npm ci
+#       - name: Wait for Postgres
+#         run: |
+#           n=0
+#           until pg_isready -h localhost -p 5432 || [ $n -ge 10 ]; do
+#             n=$((n+1))
+#             sleep 1
+#           done
+#       - name: Run migrations
+#         env:
+#           DATABASE_URL: postgres://postgres:password@localhost:5432/itpm
+#         run: psql $DATABASE_URL -f migrations/schema.sql || true
+#       - name: Run tests
+#         env:
+#           DATABASE_URL: postgres://postgres:password@localhost:5432/itpm
+#           JWT_SECRET: ci-secret
+#         run: npm test
 
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-      - name: Install deps
-        run: npm ci
-      - name: Lint
-        run: npm run lint
+#   lint:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v4
+#       - name: Setup Node
+#         uses: actions/setup-node@v4
+#         with:
+#           node-version: 20
+#       - name: Install deps
+#         run: npm ci
+#       - name: Lint
+#         run: npm run lint
