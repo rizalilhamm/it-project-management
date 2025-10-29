@@ -7,6 +7,6 @@ app.use(helmet());
 app.use(express.json());
 
 app.use('/', routes);
-app.get('/health', (req, res) => res.json({ ok:true }));
+app.get('/', (req, res) => res.json({ message: 'Hello World!' }));
 
 module.exports = app;

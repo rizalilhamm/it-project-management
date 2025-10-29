@@ -7,4 +7,4 @@ router.use('/auth', require('./auth'));
 // router.use('/tasks', require('./tasks'));
 // router.use('/subtasks', require('./subtasks'));
 
-// module.exports = router;
+module.exports = router;
