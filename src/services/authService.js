@@ -6,11 +6,12 @@ dotenv.config();
 
 async function register(data) {
   if (data.password.length < 8) {
-    const err = new Error('Password must be at least 8 characters long');
-    err.code = 400
-    throw err
+    const error = new Error('Password must be at least 8 characters long');
+    error.code = 400
+    throw error
   }
   const checkUser = await usersRepo.findByEmail(data.email)
+  
   if (checkUser.id != 0) {
     const error = new Error('User already exist')
     error.code = 400
@@ -23,10 +24,13 @@ async function register(data) {
 }
 
 async function login({ email, password }) {
+  
   const user = await usersRepo.findByEmail(email);
-  if (!user) {
-    return null;
-  }
+  // if (user.id == 0) {
+  //   const error = new Error('User not found')
+  //   error.code = 404
+  //   throw error
+  // }
 
   const ok = await hash.compare(password, user.password);
   if (!ok) {
