@@ -1,4 +1,5 @@
 const authService = require('../services/authService');
+const { isValidEmail } = require('../utils/validators');
 
 async function register(req, res) {
   try {
@@ -6,6 +7,10 @@ async function register(req, res) {
 
     if (!full_name || !email || !password || !role) {
       return res.status(400).json({ error: "all fields are required" });
+    }
+    
+    if (!isValidEmail(email)) {
+      return res.status(400).json({ error: "invalid email format" });
     }
 
     if (!["supervisor", "staff"].includes(role)) {
@@ -32,6 +37,10 @@ async function login(req, res) {
     if (!email || !password) {
       return res.status(400).json({ error: 'missing fields' });
     }
+    
+    if (!isValidEmail(email)) {
+      return res.status(400).json({ error: "invalid email format" });
+    }
 
     const token = await authService.login({ email, password });
 
@@ -52,12 +61,13 @@ async function resetPassword(req, res) {
     if (!email) {
       return res.status(400).json({ error: "missing email or invalid format" });
     }
-
-    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!regex.test(email)) {
+    
+    
+    if (!isValidEmail(email)) {
+    
       return res.status(400).json({ error: "invalid email format" });
     }
-
+      
     const token = await authService.resetPassword(email);
 
     if (!token) {
