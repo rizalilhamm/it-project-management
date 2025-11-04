@@ -1,15 +1,26 @@
-const projectsRepo = require('../repositories/projectsRepository');
-const usersRepo = require('../repositories/usersRepository');
+const projectRepo = require("../repositories/projectsRepository");
+const userRepo = require("../repositories/usersRepository");
 
 async function createProject(data) {
-    const user = await usersRepo.findById(data)
+  const user = await userRepo.findById(data.supervisor_id);
+  if (!user) {
+    const error = new Error("supervisor not found");
+    error.code = 404;
+    throw error;
+  }
 
-    if (user.role != 'supervisor') {
-        throw new Error('user not allowed to create ')
-    }
+  if (user.role != "supervisor") {
+    const error = new Error("user not allowed to create a new project");
+    error.code = 401;
+    throw error;
+  }
 
-    const prjCreated = await projectsRepo.create(data)
-    return prjCreated
+  const prjCreated = await projectRepo.create(data);
+  return prjCreated;
 }
 
-module.exports = { createProject };
+async function listProject(payload) {
+  
+}
+
+module.exports = { createProject, listProject };
