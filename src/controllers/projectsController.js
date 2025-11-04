@@ -6,15 +6,22 @@ async function create(req, res) {
         const { name, description } = req.body;
 
         if (!name || !description) {
-            res.status(400).json({error: 'missing required payload'})
+            return res.status(400).json({error: 'missing required payload'})
         }
         const createdProject = await projectsService.createProject({
             name: name,
             description: description
         });
-    } catch {
-        console.error(err);
-        res.status(err.code).json({ error: err.message, code: err.code });
+        
+        if (!createdProject) {
+            return res.status(400).json({error: 'project not created'})
+        }
+        
+        res.status(201).json(createdProject);
+
+    } catch(error) {
+        res.status(error.code).json({ error: error.message, code: error.code });
+        
     }
 }
 

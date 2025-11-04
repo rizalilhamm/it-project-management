@@ -2,10 +2,10 @@ const projectsRepo = require('../repositories/projectsRepository');
 const usersRepo = require('../repositories/usersRepository');
 
 async function createProject(data) {
-    const user = await usersRepo.findById(supervisor_id)
+    const user = await usersRepo.findById(data)
 
     if (user.role != 'supervisor') {
-        const error = new Error('user not allowed to create ')
+        throw new Error('user not allowed to create ')
     }
 
     const prjCreated = await projectsRepo.create(data)
