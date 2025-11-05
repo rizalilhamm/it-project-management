@@ -5,13 +5,13 @@ async function createProject(data) {
   const user = await userRepo.findById(data.supervisor_id);
   if (!user) {
     const error = new Error("supervisor not found");
-    error.code = 404;
+    error.status = 404;
     throw error;
   }
 
   if (user.role != "supervisor") {
     const error = new Error("user not allowed to create a new project");
-    error.code = 401;
+    error.status = 401;
     throw error;
   }
 
@@ -23,12 +23,22 @@ async function listProject(payload) {
   const projects = await projectRepo.listBySupervisor(payload);
   if (!projects) {
     const error = new Error("no projects found");
-    error.code = 404;
+    error.status = 404;
     throw error;
   }
-  
 
   return projects;
 }
 
-module.exports = { createProject, listProject };
+async function projectDetail(project_id) {
+  const project = await projectRepo.findById(project_id);
+  if (!project) {
+    const error = new Error("project not found");
+    error.status = 404;
+    throw error;
+  }
+
+  return project;
+}
+
+module.exports = { createProject, listProject, projectDetail };

@@ -15,4 +15,10 @@ async function listBySupervisor({ supervisor_id, order_by = 'ASC' }) {
   return result;
 }
 
-module.exports = { create, listBySupervisor }
+async function findById(project_id) {
+  const q = `SELECT * FROM projects WHERE id = ${project_id}`;
+  const result = await db.query(q);
+  return result[0];
+}
+
+module.exports = { create, listBySupervisor, findById }
