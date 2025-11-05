@@ -24,7 +24,7 @@ async function create(req, res) {
     res.status(error.code).json({ error: error.message, code: error.code });
   }
 }
-
+//
 async function listBySupervisor(req, res) {
   try {
     const supervisor_id = req.params.supervisorId;
