@@ -6,9 +6,12 @@ async function create({ name, description, supervisor_id }) {
   return result[0];
 }
 
-async function listBySupervisor({ supervisor_id }) {
-  const q = 'SELECT * FROM projects WHERE supervisor_id = $1';
-  const result = await db.query(q, [supervisor_id]);
+async function listBySupervisor({ supervisor_id, order_by = 'ASC' }) {
+  let q = `SELECT * FROM projects WHERE supervisor_id = ${supervisor_id}`;
+  if (order_by) {
+    q += ` ORDER BY id ${order_by}`;
+  }
+  const result = await db.query(q);
   return result;
 }
 

@@ -20,7 +20,15 @@ async function createProject(data) {
 }
 
 async function listProject(payload) {
+  const projects = await projectRepo.listBySupervisor(payload);
+  if (!projects) {
+    const error = new Error("no projects found");
+    error.code = 404;
+    throw error;
+  }
   
+
+  return projects;
 }
 
 module.exports = { createProject, listProject };

@@ -25,4 +25,22 @@ async function create(req, res) {
   }
 }
 
-module.exports = { create };
+async function listBySupervisor(req, res) {
+  try {
+    const supervisor_id = req.params.supervisorId;
+    let order_by = req.query.order_by;
+    const projects = await projectsService.listProject({ supervisor_id, order_by });
+    if (!projects) {
+      const error = new Error("no projects found");
+      error.code = 404;
+      return res.status(404).json({ error: error.message, code: error.code });
+    }
+    
+    res.status(200).json(projects);
+  } catch (error) {
+    console.log(error);
+    res.status(error.code).json({ error: error.message, code: error.code });
+  }
+}
+
+module.exports = { create, listBySupervisor };
