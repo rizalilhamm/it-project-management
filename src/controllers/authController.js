@@ -1,14 +1,15 @@
-const authService = require('../services/authService');
-const { isValidEmail } = require('../utils/validators');
+const authService = require("../services/authService");
+const { isValidEmail } = require("../utils/validators");
 
 async function register(req, res) {
   try {
     const { full_name, email, password, role } = req.body;
 
+
     if (!full_name || !email || !password || !role) {
       return res.status(400).json({ error: "all fields are required" });
     }
-    
+
     if (!isValidEmail(email)) {
       return res.status(400).json({ error: "invalid email format" });
     }
@@ -35,9 +36,9 @@ async function login(req, res) {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.status(400).json({ error: 'missing fields' });
+      return res.status(400).json({ error: "missing fields" });
     }
-    
+
     if (!isValidEmail(email)) {
       return res.status(400).json({ error: "invalid email format" });
     }
@@ -45,7 +46,7 @@ async function login(req, res) {
     const token = await authService.login({ email, password });
 
     if (!token) {
-      return res.status(400).json({ error: 'invalid credentials' });
+      return res.status(400).json({ error: "invalid credentials" });
     }
 
     res.json({ token });
@@ -57,17 +58,16 @@ async function login(req, res) {
 async function resetPassword(req, res) {
   try {
     const { email } = req.body;
+    console.log(req.body);
 
     if (!email) {
       return res.status(400).json({ error: "missing email or invalid format" });
     }
-    
-    
+
     if (!isValidEmail(email)) {
-    
       return res.status(400).json({ error: "invalid email format" });
     }
-      
+
     const token = await authService.resetPassword(email);
 
     if (!token) {
