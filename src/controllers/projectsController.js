@@ -88,4 +88,40 @@ async function detail(req, res) {
   }
 }
 
+
+// Here must be the update function change again tomorrow
+async function update(req, res) {
+  try {
+    const project_id = req.params.projectId;
+    const { name, description, supervisor_id } = req.body;
+    if (!project_id) {
+      const error = new Error("project id is required");
+      error.status = 400;
+      return res
+        .status(400)
+        .json({ error: error.message, status: error.status });
+    }
+    const project = await projectsService.projectDetail(project_id);
+    if (!project) {
+      const error = new Error("project not found");
+      error.status = 404;
+      return res
+        .status(404)
+        .json({ error: error.message, status: error.status });
+    }
+    const updatedProject = await projectsService.updateProject({
+      project_id,
+      name,
+      description,
+      supervisor_id,
+    });
+    res.status(200).json({ status: 200, data: updatedProject });
+  } catch (error) {
+    console.log(error);
+    res
+      .status(error.status)
+      .json({ error: error.message, status: error.status });
+  }
+}
+
 module.exports = { create, listBySupervisor, detail };

@@ -6,5 +6,6 @@ const ctrl = require("../controllers/projectsController");
 router.post("/create", ctrl.create);
 router.get("/:supervisorId", ctrl.listBySupervisor);
 router.get("/details/:projectId", ctrl.detail);
+router.put("/details/:projectId", ctrl.update);
 
 module.exports = router;
