@@ -1,45 +1,54 @@
-const sqlite3 = require('sqlite3').verbose();
-const path = require('path');
+const { Pool } = require('pg');
 
-// Path to existing database in parent project folder
-const dbPath = path.resolve(__dirname, '../../itpm.db');
+// Use environment variables for connection details
+const connectionString = {
+    host: process.env.POSTGRES_HOST || 'localhost',
+    user: process.env.POSTGRES_USER || 'postgres',
+    password: process.env.POSTGRES_PASSWORD || 'password',
+    database: process.env.POSTGRES_DB || 'itpm',
+    port: process.env.POSTGRES_PORT || 5432,
+    // Note: In production, you would add SSL configuration here.
+};
 
-// Initialize database connection
-const db = new sqlite3.Database(dbPath, (err) => {
-  if (err) {
-    console.error('❌ Failed to connect to SQLite database:', err.message);
-  } else {
-    console.log('✅ Connected to SQLite database at', dbPath);
-  }
+// Create a connection pool
+const pool = new Pool(connectionString);
+
+pool.on('connect', () => {
+    console.log('✅ Connected to PostgreSQL database');
+});
+
+pool.on('error', (err) => {
+    console.error('❌ Unexpected error on idle PostgreSQL client', err);
+    // Exit the process to allow the container to restart if the connection is lost
+    // process.exit(-1); 
 });
 
 /**
  * Execute a SQL query with optional parameters.
- * Automatically determines whether to use `all` (for SELECT)
- * or `run` (for INSERT/UPDATE/DELETE).
  *
  * @param {string} sql - The SQL query string
  * @param {Array} [params=[]] - Query parameters
- * @returns {Promise<object|Array>} Query result
+ * @returns {Promise<Array>} Query result rows
  */
 function query(sql, params = []) {
-  return new Promise((resolve, reject) => {
-    const isSelect = sql.trim().toLowerCase().startsWith('select');
-    const method = isSelect ? 'all' : 'run';
-
-    db[method](sql, params, function (err, result) {
-      if (err) {
-        console.error('❗ SQL Error:', err.message);
-        return reject(err);
-      }
-
-      if (isSelect) {
-        resolve(result);
-      } else {
-        resolve({ lastID: this.lastID, changes: this.changes });
-      }
-    });
-  });
+    // The pg pool uses 'query' for all operations (SELECT, INSERT, etc.)
+    return pool.query(sql, params)
+        .then(res => {
+            // For SELECT, we return the rows
+            if (sql.trim().toLowerCase().startsWith('select')) {
+                return res.rows;
+            } 
+            
+            // For INSERT/UPDATE/DELETE, we return metadata
+            // Note: pg doesn't use lastID/changes directly like SQLite.
+            // For getting the last ID, you must append 'RETURNING id' to your INSERT query.
+            return { rowCount: res.rowCount };
+        })
+        .catch(err => {
+            console.error('❗ PostgreSQL Query Error:', err.message, 'SQL:', sql);
+            throw err; // Re-throw the error for the calling service/controller to handle
+        });
 }
 
-module.exports = { db, query };
+// Export the query function and the pool (in case a direct client is needed)
+module.exports = { pool, query };
