@@ -1,23 +1,38 @@
 version: '3.8'
+
 services:
+  # New PostgreSQL Database Service
   db:
-    image: postgres:15
+    image: postgres:15-alpine # Use a lean Alpine version of Postgres
+    container_name: itpm_postgres
+    restart: always
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: itpm
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     ports:
-      - "5432:5432"
+      - "5432:5432" # Expose port for local debugging (optional)
     volumes:
-      - db-data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data # Persistent storage for database files
+
   app:
     build: .
+    container_name: itpm_app
+    restart: always
+    env_file:
+      - .env
     environment:
-      DATABASE_URL: postgres://postgres:password@db:5432/itpm
-      JWT_SECRET: change_this_secret
+      # Pass the Postgres connection variables to the app container
+      POSTGRES_HOST: db # IMPORTANT: This is the service name defined above
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_PORT: 5432
+      JWT_SECRET: ${JWT_SECRET}
     ports:
-      - "3000:3000"
+      - "${PORT}:${PORT}"
     depends_on:
-      - db
+      - db # Ensure the database starts before the application
+
 volumes:
-  db-data:
+  postgres_data:
