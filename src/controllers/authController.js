@@ -27,6 +27,7 @@ async function register(req, res) {
 
     res.status(201).json(user);
   } catch (err) {
+    console.log(err);
     res.status(err.code).json({ error: err.message, code: err.code });
   }
 }

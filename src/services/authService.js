@@ -11,7 +11,7 @@ async function register(data) {
     throw err;
   }
   const checkUser = await userRepo.findByEmail(data.email);
-  if (checkUser.id != 0) {
+  if (checkUser) {
     const error = new Error("User already exist");
     error.code = 400;
     throw error;
