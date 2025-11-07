@@ -29,7 +29,7 @@ async function findByEmail(email) {
 }
 
 async function findById(id) {
-  const result = await db.query("SELECT * FROM users WHERE id= ?", [id]);
+  const result = await db.query("SELECT * FROM users WHERE id= $1;", [id]);
   return result[0];
 }
 

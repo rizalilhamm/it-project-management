@@ -16,10 +16,23 @@ async function createProject(data) {
   }
 
   const prjCreated = await projectRepo.create(data);
+  if (!prjCreated) {
+    const error = new Error("project creation failed");
+    error.status = 500;
+    throw error;
+  }
+
   return prjCreated;
 }
 
 async function listProject(payload) {
+  const user = await userRepo.findById(payload.supervisor_id);
+  if (!user) {
+    const error = new Error("user not found");
+    error.status = 404;
+    throw error;
+  }
+
   const projects = await projectRepo.listBySupervisor(payload);
   if (!projects) {
     const error = new Error("no projects found");

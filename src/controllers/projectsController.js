@@ -20,7 +20,9 @@ async function create(req, res) {
       return res.status(400).json({ error: "project not created" });
     }
 
-    res.status(201).json(createdProject);
+    res
+      .status(201)
+      .json({ statusCode: 201, message: "Project created successfully" });
   } catch (error) {
     if (error.status == 500) {
       logger.error(
@@ -69,7 +71,7 @@ async function detail(req, res) {
         .status(400)
         .json({ error: error.message, status: error.status });
     }
-    
+
     const project = await projectsService.projectDetail(project_id);
     if (!project) {
       const error = new Error("project not found");
@@ -87,7 +89,6 @@ async function detail(req, res) {
       .json({ error: error.message, status: error.status });
   }
 }
-
 
 // Here must be the update function change again tomorrow
 async function update(req, res) {
@@ -124,4 +125,4 @@ async function update(req, res) {
   }
 }
 
-module.exports = { create, listBySupervisor, detail };
+module.exports = { create, listBySupervisor, detail, update };
