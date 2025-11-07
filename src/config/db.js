@@ -3,9 +3,9 @@ const { Pool } = require('pg');
 // Use environment variables for connection details
 const connectionString = {
     host: process.env.POSTGRES_HOST || 'localhost',
-    user: process.env.POSTGRES_USER || 'postgres',
-    password: process.env.POSTGRES_PASSWORD || 'password',
-    database: process.env.POSTGRES_DB || 'itpm',
+    user: process.env.POSTGRES_USER || 'itpm_user',
+    password: process.env.POSTGRES_PASSWORD || 'itpm_secret',
+    database: process.env.POSTGRES_DB || 'itpm_database',
     port: process.env.POSTGRES_PORT || 5432,
     // Note: In production, you would add SSL configuration here.
 };
