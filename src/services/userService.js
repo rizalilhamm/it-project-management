@@ -11,11 +11,6 @@ async function detail(user_id) {
   return user;
 }
 
-module.exports = {
-  detail,
-};
-
-
 async function update(user_id, { full_name }) {
   
   const updatedUser = await userRepo.update(user_id, { full_name });

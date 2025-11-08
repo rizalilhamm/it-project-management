@@ -10,15 +10,15 @@ async function register(data) {
     err.code = 400;
     throw err;
   }
-  const checkUser = await usersRepo.findByEmail(data.email);
-  if (checkUser.id != 0) {
+  const checkUser = await userRepo.findByEmail(data.email);
+  if (checkUser) {
     const error = new Error("User already exist");
     error.code = 400;
     throw error;
   }
 
   data.password = await hash.hashPassword(data.password);
-  const user = await usersRepo.createUser(data);
+  const user = await userRepo.createUser(data);
   return user;
 }
 

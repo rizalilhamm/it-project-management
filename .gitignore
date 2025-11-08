@@ -71,3 +71,5 @@ tsconfig.tsbuildinfo
 # Local testing
 coverage-final.json
 jest-html-reporters-*.html
+
+itpm.db
